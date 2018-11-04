@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" >
+<!-- begin::Head -->
+{{#def.include('template/head')}}
+<link rel="stylesheet" href="/vendor/jquery-ajax-file-uploader/css/jquery.dm-uploader.min.css" >
+
+<link href="/css/custom.css" rel="stylesheet">
+<link href="/css/custom-480.css" rel="stylesheet" media="screen and (max-width:480px)">
+<link href="/css/custom-760.css" rel="stylesheet" media="screen and (max-width:767px) and (min-width: 481px)">
+<link href="/css/custom-1200.css" rel="stylesheet" media="screen and (max-width:1200px) and (min-width: 768px)">
+
+<style>
+#id_textDescription {
+	border: 2px solid #ebedf2;
+}
+#id_textDescription:focus {
+	border: 2px solid #734CEA;
+}
+</style>
+<!-- end::Head -->
+<!-- end::Body -->
+<body class="m--skin- m-content--skin-light m-header--fixed m-header--fixed-mobile m-aside-left--offcanvas-default m-aside-left--enabled m-aside-left--fixed m-aside-left--skin-dark m-aside--offcanvas-default">
+	<!-- begin:: Page -->
+	<div class="m-grid m-grid--hor m-grid--root m-page">
+		<!-- BEGIN: Header -->
+		{{#def.include('template/header')}}
+		<!-- END: Header -->
+		<!-- BEGIN: Left Aside -->
+		{{#def.include('template/left_aside')}}
+		<!-- END: Left Aside -->
+		<!-- begin::Body -->
+		<div class="m-grid__item m-grid__item--fluid m-grid m-grid--hor-desktop m-grid--desktop m-body" >
+			<div class="m-grid__item m-grid__item--fluid m-grid m-grid--ver-desktop m-grid--desktop m-container m-container--responsive m-container--xxl m-container--full-height"
+				 style="min-height:500px;
+				 		/*background-color: #ffffff8c;*/
+						/*margin-top: -100px;*/
+						z-index:99;
+						-webkit-border-radius: 10px;
+						-moz-border-radius: 10px;
+						border-radius: 10px;">
+				<div class="m-grid__item m-grid__item--fluid m-wrapper">
+					<!-- BEGIN: Subheader -->
+					<!-- END: Subheader -->
+					<div class="m-content m--margin-top-30">
+						<div class="m-portlet m-portlet--mobile">
+							<div class="m-portlet__head">
+								<div class="m-portlet__head-caption">
+									<div class="m-portlet__head-title">
+										<h3 class="m-portlet__head-text">
+											Hex Files
+										</h3>
+									</div>
+								</div>
+							</div>
+							<div class="m-portlet__body">
+								<!--begin: Search Form -->
+								<div class="m-form m-form--label-align-right m--margin-top-20 m--margin-bottom-30">
+									<div class="row align-items-center">
+										<div class="col-xl-8 order-2 order-xl-1">
+											<div class="form-group m-form__group row align-items-center">
+												<div class="col-md-4">
+													<div class="m-input-icon m-input-icon--left">
+														<input type="text" class="form-control m-input" placeholder="Search..." id="generalSearch">
+														<span class="m-input-icon__icon m-input-icon__icon--left">
+															<span>
+																<i class="la la-search"></i>
+															</span>
+														</span>
+													</div>
+												</div>
+											</div>
+										</div>
+										{{?it.user}}
+										<div class="col-xl-4 order-1 order-xl-2 m--align-right">
+											<a href="#" class="btn btn-focus m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill" data-toggle="modal" data-target="#m_modal_upload" id='id_btnNewFile'>
+												<span>
+													<i class="la la-cloud-upload"></i>
+													<span>
+														New File
+													</span>
+												</span>
+											</a>
+											<div class="m-separator m-separator--dashed d-xl-none"></div>
+										</div>
+										{{?}}
+									</div>
+								</div>
+								<!--end: Search Form -->
+								<!--begin: Datatable -->
+								<div class="m_datatable" id="auto_column_hide"></div>
+								<!--end: Datatable -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- end:: Body -->
+		<!-- begin::Footer -->
+		<!-- end::Footer -->
+	</div>
+
+	<div class="modal fade" id="m_modal_upload" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="">
+						Upload
+					</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">
+												&times;
+											</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group m-form__group">
+						<h5 style="color: #6c757d;">
+							Description:
+						</h5>
+						<textarea class="form-control" id="id_textDescription" rows = '4'></textarea>
+					</div>
+
+					<div id="drag-and-drop-zone" class="dm-uploader p-5 m-dropzone m-dropzone--primary" style="padding:10px !important;">
+						<h3 class="mb-5 mt-5 text-muted">Drag &amp; drop file here</h3>
+						<div class="btn btn-primary btn-block mb-5">
+							<span>Open the file Browser</span>
+							<input type="file" title='Click to add Files' />
+						</div>
+					</div>
+					<div class="card h-90" style="margin-top : 20px;">
+						<div class="card-header">
+							File Status
+						</div>
+
+						<ul class="list-unstyled p-2 d-flex flex-column col" id="files">
+							<li class="text-muted text-center empty">No files uploaded.</li>
+						</ul>
+						<script type="text/html" id="files-template">
+							<li class="media">
+								<div class="media-body mb-1">
+									<p class="mb-2">
+										<strong>%%filename%%</strong> - Status: <span class="text-muted">Waiting</span>
+									</p>
+									<div class="progress mb-2">
+										<div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+											 role="progressbar"
+											 style="width: 0%"
+											 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+										</div>
+									</div>
+									<hr class="mt-1 mb-1" />
+								</div>
+							</li>
+						</script>
+					</div>
+				</div>
+				<!--<div class="modal-footer">-->
+					<!--<button type="button" class="btn btn-secondary" data-dismiss="modal">-->
+						<!--Close-->
+					<!--</button>-->
+					<!--<button type="button" class="btn btn-primary">-->
+						<!--Save changes-->
+					<!--</button>-->
+				<!--</div>-->
+			</div>
+		</div>
+	</div>
+
+	<a href="#" class="m--hide" data-toggle="modal" data-target="#m_modal_download" id='id_btnOpenDownloadModal'></a>
+	<div class="modal fade" id="m_modal_download" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">
+						Download
+					</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">
+							&times;
+						</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<fieldset style="display: none;">
+						<legend>mbed</legend>
+						<form>
+							<p>
+								Login with your developer.mbed.org credentials. The <a href="https://developer.mbed.org/handbook/Compile-API">mbed remote compile API</a> only supports HTTP(S) basic auth...
+							</p>
+							<p>
+								<label for="username" class="rightAligned">mbed Username: </label>
+								<input type="text" name="username" id="username"></input>
+							</p>
+							<p>
+								<label for="password" class="rightAligned">Password: </label>
+								<input type="password" name="password" id="password"></input>
+								<button type="button" id="authenticate">Set Credentials</button>
+							</p>
+						</form>
+						<fieldset>
+							<legend>Remote Compiler API</legend>
+							<p>
+								Provide either the name of a program in your online <a href="https://developer.mbed.org/compiler/">mbed compiler workspace</a> or a fully qualified URL to a published repository on <a href="https://developer.mbed.org/code/">developer.mbed.org</a>
+							</p>
+							<form id="buildForm">
+								<p>
+									<input type="radio" name="buildType" value="program" checked="true">
+									<label for="programName" class="leftAligned">Program name: </label>
+									<input type="text" name="programName" id="programName" value="mbed_blinky" size="60"/>
+									</input>
+								</p>
+								<p>
+									<input type="radio" name="buildType" value="repo">
+									<label for="repoURL" class="leftAligned">Repository URL: </label>
+									<input type="url" name="repoURL" id="repoURL" value="https://developer.mbed.org/users/devanlai/code/STM32F103C8T6_WebUSBDFU/" size="60"/>
+									</input>
+								</p>
+								<p>
+									<label for="targetPlatform">Target Platform: </label>
+									<input type="text" list="platforms" name="targetPlatform" id="targetPlatform" value="ST-Nucleo-F103RB"/>
+									<datalist id="platforms">
+										<option value="ST-Nucleo-F103RB">STMicro NUCLEO-F103RB</option>
+										<option value="ST-Nucleo-F303K8">STMicro NUCLEO-F303K8</option>
+										<option value="Seeed-Arch-Max">Seeed Arch Max</option>
+										<option value="FRDM-KL05Z">Kinetis FRDM-KL05Z</option>
+										<option value="KL25Z">Kinetis FRDM-KL25Z</option>
+									</datalist>
+								</p>
+								<p>
+									<button type="button" name="build" id="build" disabled>Build</button>
+									<button type="button" name="save" id="save" disabled>Save</button>
+									<button type="button" name="buildAndProgram" id="buildAndProgram" disabled>Build and Program</button>
+								</p>
+							</form>
+						</fieldset>
+						<fieldset>
+							<legend>Build Output</legend>
+							<div id="mbedLog" class="buildLog"></div>
+						</fieldset>
+					</fieldset>
+					<fieldset>
+						<legend><h5>WebUSB</h5></legend>
+						<p>Enter the USB Vendor ID to filter connected WebUSB devices.
+						<ul>
+							<li>Boards with a <a href="https://github.com/devanlai/DAPLink/tree/nucleo_webusb">DAPLink</a> debug interface have a vendor ID of 0x0D28</li>
+							<li>Boards with the <a href="https://github.com/devanlai/dapboot/tree/highboot">dapboot</a> bootloader have a vendor ID of 0x1209 in DFU mode</li>
+						</ul>
+						</p>
+						<p>
+							<div class="form-group m-form__group row">
+								<label for="example-text-input" class="col-5 col-form-label">Vendor ID (hex):</label>
+								<div class="col-7">
+									<input class = 'form-control m-input' list="vendor_ids" type="text" name="vid" id="vid" value="0x1209" maxlength="6" size="8" pattern="0x[A-Fa-f0-9]{1,4}"/>
+								</div>
+							</div>
+							<datalist id="vendor_ids">
+								<option value="0x1209">dapboot DFU bootloader</option>
+								<option value="0x0D28">mbed DAPLink</option>
+							</datalist>
+						</p>
+						<div class="form-group m-form__group row">
+							<div class="col-5" style="padding: 10px 15px;">
+								<span id="status"></span>
+							</div>
+							<div class="col-7">
+								<p>
+									<button id="connect" class="btn btn-primary">Connect</button>
+								</p>
+								<p>
+									<div id="usbInfo" style="white-space: pre"></div>
+									<div id="dfuInfo" style="white-space: pre"></div>
+								</p>
+							</div>
+						</div>
+
+						<fieldset style="display: none;">
+							<legend><h5>Runtime mode</h5></legend>
+							<p>
+								If the device has a <a href="http://www.usb.org/developers/docs/devclass_docs/DFU_1.1.pdf">USB DFU</a> bootloader installed, use the detach button to switch from runtime mode to DFU mode.
+							</p>
+							<button id="detach" disabled="true" class="btn btn-primary">Detach DFU</button>
+						</fieldset>
+						<fieldset>
+							<div class="form-group m-form__group row">
+								<label for="" class="col-5 col-form-label">Transfer Size:</label>
+								<div class="col-7">
+									<input class = 'form-control m-input' type="number" name="transferSize" id="transferSize" value="1024"/>
+								</div>
+							</div>
+							<legend><h5>DFU mode</h5></legend>
+							<fieldset>
+								<legend><h6>Firmware Download (write to USB device)</h6></legend>
+								<p align = 'right'>
+									<button id="download" class="btn btn-primary" disabled="true">Download</button>
+									<span id="binaryInfo"></span>
+								</p>
+								<div class="log" id="downloadLog"></div>
+							</fieldset>
+						</fieldset>
+					</fieldset>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end:: Page -->
+	<!-- begin::Quick Sidebar -->
+	<!-- end::Quick Sidebar -->
+	<!-- begin::Scroll Top -->
+	<div class="m-scroll-top m-scroll-top--skin-top" data-toggle="m-scroll-top" data-scroll-offset="500" data-scroll-speed="300">
+		<i class="la la-arrow-up"></i>
+	</div>
+
+	<form action="/uploadAvatar" method='post' enctype="multipart/form-data" id='id_formUploadAvatar' hidden = 'true'>
+		<input type="file" name="avatar" id='id_fileAvatar' accept="image/*" data-type='image'>
+		<input type="text" name="current_url" id="id_current_url">
+	</form>
+	<input type = 'hidden' id = 'time_zone_name'>
+	<input type = 'hidden' id = 'id_isAdmin' value = '{{?it.user}}1{{??}}0{{?}}'>
+	<!-- end::Scroll Top -->
+	<!-- begin::Quick Nav -->
+	<!-- end::Quick Nav -->
+	<script src="/metronic/assets5/vendors/base/vendors.bundle.js" type="text/javascript"></script>
+	<script src="/metronic/assets5/demo/demo9/base/scripts.bundle.js" type="text/javascript"></script>
+	<script type="text/javascript" src="/vendor/jquery-ajax-file-uploader/js/jquery.dm-uploader.min.js"></script>
+	<script src="/vendor/jquery-ajax-file-uploader/js/demo-ui.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.min.js" type="text/javascript"></script>
+	<script src="/js/index.js" type = 'text/javascript'></script>
+	<script src="/js/upload.js" type = 'text/javascript'></script>
+
+	<script src="/vendor/webdfu/mbed-download/mbed-compile-api.js"></script>
+	<script src="/vendor/webdfu/dfu-util/dfu.js"></script>
+	<script src="/vendor/webdfu/dfu-util/FileSaver.js"></script>
+	<script src="/vendor/webdfu/mbed-download/mbed-download.js"></script>
+</body>
+<!-- end::Body -->
+</html>

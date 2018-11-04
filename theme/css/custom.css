@@ -1,0 +1,16 @@
+body {
+    background: url("../img/bg-2.jpg");
+}
+.btn-outline-primary.disabled, .btn-outline-primary:disabled
+{
+    color : #c8c2d8 !important;
+    background-color: #ffffff !important;
+}
+
+.h-90 {
+    height: 90% !important;
+}
+
+.m-header-signout {
+    margin-top: 17px !important;
+}

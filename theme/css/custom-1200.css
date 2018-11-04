@@ -1,0 +1,9 @@
+.m-header-signout {
+    margin-top: 10px !important;
+}
+
+@media (min-width: 992px) {
+    .m-header-signout {
+        margin-top: 18px !important;
+    }
+}
